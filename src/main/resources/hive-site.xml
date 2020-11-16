@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+  <property>
+    <name>javax.jdo.option.ConnectionURL</name>
+    <value>jdbc:mysql://192.168.70.130:3306/hive_redhatlv14_flink?createDatabaseIfNotExist=true&amp;useSSL=false</value>
+  </property>
+  
+    <property>
+    <name>javax.jdo.option.ConnectionDriverName</name>
+    <value>com.mysql.jdbc.Driver</value>
+  </property>
+  
+  <property>
+    <name>javax.jdo.option.ConnectionUserName</name>
+    <value>root</value>
+  </property> 
+  
+  <property>
+    <name>javax.jdo.option.ConnectionPassword</name>
+    <value>Welcome_1</value>
+  </property>
+  
+   <property>
+    <name>hive.server2.thrift.bind.host</name>
+    <value>RedHatLv14</value>
+  </property>
+  
+   <property>
+       <name>hive.metastore.uris</name>
+       <value>thrift://RedHatLv14:9083</value>
+  </property>
+  
+  <property>
+    <name>hive.server2.thrift.port</name>
+    <value>10000</value>                              
+    <description>Port number of HiveServer2 Thrift interface.Can be overridden by setting $HIVE_SERVER2_THRIFT_PORT</description>
+  </property>
+  <property>
+    <name>hive.cli.print.header</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hive.cli.print.current.db</name>
+    <value>true</value>
+  </property>
+  <property>     
+    <name>hive.warehouse.subdir.inherit.perms</name>
+    <value>true</value>
+    <description>Set this to false if the table directories should be created with the permissions derived from dfs umask instead of inheriting the permission of the warehouse or database directory.
+	</description>
+  </property>
+  <property>
+   <name>hive.exec.stagingdir</name>
+   <value>/user/hive/warehouse/staging/.hive-staging</value>
+  </property>
+  <property>
+     <name>system:java.io.tmpdir</name>
+     <value>/home/hadoop/apache-hive-1.2.2-bin/tmp</value>
+</property>
+<property>
+     <name>system:user.name</name>
+     <value>root</value>
+</property>
+</configuration>
+
