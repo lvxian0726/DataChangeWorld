@@ -3,14 +3,14 @@ package com.lvxian.streaming
 import java.{lang, util}
 
 import org.apache.flink.api.common.functions.{RichFilterFunction, RichMapFunction, RuntimeContext}
-import org.apache.flink.api.common.state.{ListState, ListStateDescriptor, ValueState, ValueStateDescriptor}
+import org.apache.flink.api.common.state._
+import org.apache.flink.api.common.time.Time
 import org.apache.flink.api.java.tuple.Tuple
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.runtime.state.filesystem.FsStateBackend
 import org.apache.flink.streaming.api.{CheckpointingMode, TimeCharacteristic}
 import org.apache.flink.streaming.api.functions.source.SocketTextStreamFunction
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment, _}
-import org.apache.flink.streaming.api.windowing.time.Time
 
 object flinkEventTimeStatusTest {
 
@@ -21,10 +21,10 @@ object flinkEventTimeStatusTest {
 
     environment.enableCheckpointing(1000 * 60)
     environment.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
-//    environment.getCheckpointConfig.setMinPauseBetweenCheckpoints(60 * 1000)
-//    environment.getCheckpointConfig.setCheckpointTimeout(10 * 1000)
-//    environment.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
-//    environment.setStateBackend(new FsStateBackend("hdfs://192.168.70.132:9000/flink-1.11.1-checkpoints", true))
+    //    environment.getCheckpointConfig.setMinPauseBetweenCheckpoints(60 * 1000)
+    //    environment.getCheckpointConfig.setCheckpointTimeout(10 * 1000)
+    //    environment.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
+    //    environment.setStateBackend(new FsStateBackend("hdfs://192.168.70.132:9000/flink-1.11.1-checkpoints", true))
 
     environment.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime)
 
@@ -64,7 +64,21 @@ object flinkEventTimeStatusTest {
 
     override def open(parameters: Configuration): Unit = {
       super.open(parameters)
-      current_state = getRuntimeContext.getState(new ValueStateDescriptor[Long]("max_event_time", classOf[Long]))
+
+      val statTTL: StateTtlConfig = StateTtlConfig.newBuilder(Time.minutes(1))
+        .setUpdateType(StateTtlConfig.UpdateType.OnReadAndWrite)
+        .setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired)
+        //        .cleanupFullSnapshot()
+        .cleanupIncrementally(100, false)
+        .build()
+
+      val descriptor = new ValueStateDescriptor[Long]("max_event_time", classOf[Long])
+
+      descriptor.enableTimeToLive(statTTL)
+
+      current_state = getRuntimeContext.getState(descriptor)
+
+      //      current_state = getRuntimeContext.getState(new ValueStateDescriptor[Long]("max_event_time", classOf[Long]))
 
     }
 
