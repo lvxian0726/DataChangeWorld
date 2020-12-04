@@ -42,7 +42,7 @@ public class FlinkStandaloneClientTest {
         RestClusterClient<StandaloneClusterId> flinkClient = new RestClusterClient<>(FLINK_CONFIG, StandaloneClusterId.getInstance());
 
         List<URL> urls = new ArrayList<>();
-        urls.add(new URL("file:///root/StormAndKafka-1.0-SNAPSHOT.jar"));
+            urls.add(new URL("file:///root/StormAndKafka-1.0-SNAPSHOT.jar"));
 
         String jar = "/home/hadoop/StreamingProjectForFlinkOrSpark-1.0-SNAPSHOT.jar";
         String[] arg = new String[]{"name", "lvxian"};
