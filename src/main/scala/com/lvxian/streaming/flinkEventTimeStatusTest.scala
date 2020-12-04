@@ -19,14 +19,14 @@ object flinkEventTimeStatusTest {
 
     val environment: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
     environment.setParallelism(1)
-    //    environment.enableCheckpointing(1000 * 60)
-    //    environment.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
-    //    environment.getCheckpointConfig.setMinPauseBetweenCheckpoints(60 * 1000)
-    //    environment.getCheckpointConfig.setCheckpointTimeout(10 * 1000)
-    //    environment.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
-    //    environment.setStateBackend(new FsStateBackend("hdfs://192.168.70.132:9000/flink-1.11.1-checkpoints", true))
+        environment.enableCheckpointing(1000 * 60)
+        environment.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
+        environment.getCheckpointConfig.setMinPauseBetweenCheckpoints(60 * 1000)
+        environment.getCheckpointConfig.setCheckpointTimeout(10 * 1000)
+        environment.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
+//        environment.setStateBackend(new FsStateBackend("hdfs://192.168.70.132:9000/flink-1.11.1-checkpoints", true))
 
-    //    environment.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime)
+        environment.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime)
 
 
     val function = new SocketTextStreamFunction("192.168.70.1", 1234, "\n", 5)
@@ -80,7 +80,6 @@ object flinkEventTimeStatusTest {
 
       current_state = getRuntimeContext.getState(descriptor)
       map_state = getRuntimeContext.getMapState(map_event_time_descriptor)
-
       //      current_state = getRuntimeContext.getState(new ValueStateDescriptor[Long]("max_event_time", classOf[Long]))
 
     }
@@ -93,27 +92,19 @@ object flinkEventTimeStatusTest {
       val newlest_event_time: Long = value._2.toLong
       var flag: Boolean = false
 
+            val current_state_value: Long = current_state.value()
+            print("当前数据：" + value + "    ----->上一次的状态：" + current_state_value)
+            if (current_state_value == null) { //表示该imei还没有被处理过
+              current_state.update(newlest_event_time)
+            } else { //表示该imei已经有数据，新数据需要比较
+              if (newlest_event_time > current_state_value) {
+                current_state.update(newlest_event_time)
+                flag = true
+              }
+            }
+            println("      ------> 更新后的状态：" + current_state.value())
+            flag
 
-      //      val current_state_value: Long = current_state.value()
-      //      print("当前数据：" + value + "    ----->上一次的状态：" + current_state_value)
-      //      if (current_state_value == null) { //表示该imei还没有被处理过
-      //        current_state.update(newlest_event_time)
-      //      } else { //表示该imei已经有数据，新数据需要比较
-      //        if (newlest_event_time > current_state_value) {
-      //          current_state.update(newlest_event_time)
-      //          flag = true
-      //        }
-      //      }
-      //      println("      ------> 更新后的状态：" + current_state.value())
-      //      flag
-      val l: Long = map_state.get(imei + "1")
-
-      print("------------>数据:" + value + "   开始灌入1000000状态")
-      for (i <- 1 to 100000) {
-        map_state.put(imei + i, newlest_event_time)
-      }
-      println("----------->end")
-      true
 
     }
   }

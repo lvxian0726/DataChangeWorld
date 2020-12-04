@@ -41,8 +41,8 @@ public class FlinkStandaloneClientTest {
 
         RestClusterClient<StandaloneClusterId> flinkClient = new RestClusterClient<>(FLINK_CONFIG, StandaloneClusterId.getInstance());
 
-//        List<URL> urls = new ArrayList<>();
-//        urls.add(new URL("/root/StormAndKafka-1.0-SNAPSHOT.jar"));
+        List<URL> urls = new ArrayList<>();
+        urls.add(new URL("file:///root/StormAndKafka-1.0-SNAPSHOT.jar"));
 
         String jar = "/home/hadoop/StreamingProjectForFlinkOrSpark-1.0-SNAPSHOT.jar";
         String[] arg = new String[]{"name", "lvxian"};
@@ -50,7 +50,7 @@ public class FlinkStandaloneClientTest {
                 .setJarFile(new File(jar))
                 .setArguments(arg)
                 .setEntryPointClassName("com.lvxian.streaming.flinkEventTimeStatusTest")
-//                .setUserClassPaths(urls)
+                .setUserClassPaths(urls)
                 .build();
 
         JobGraph jobGraph = PackagedProgramUtils.createJobGraph(program, FLINK_CONFIG, PARALLELISM, false);
@@ -70,6 +70,15 @@ public class FlinkStandaloneClientTest {
         System.out.println("job_status:" + status.name());
 
         System.out.println("WebInterfaceURL:" + flinkClient.getWebInterfaceURL());
+
+        long ts = System.currentTimeMillis();
+
+        System.out.println("loop start time:" + ts);
+        while (System.currentTimeMillis() - ts < 1000 * 60 * 10) {
+            Thread.sleep(5000);
+            System.out.println("当前状态：" + flinkClient.getJobStatus(jobId).get().name());
+
+        }
 
         System.out.println("FlinkStandaloneClientTest-------------->end");
 
