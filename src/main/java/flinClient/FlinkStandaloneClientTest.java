@@ -53,6 +53,7 @@ public class FlinkStandaloneClientTest {
                 .setUserClassPaths(urls)
                 .build();
 
+
         JobGraph jobGraph = PackagedProgramUtils.createJobGraph(program, FLINK_CONFIG, PARALLELISM, false);
 
 
