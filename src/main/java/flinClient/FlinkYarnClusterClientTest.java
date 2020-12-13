@@ -8,6 +8,8 @@ import org.apache.flink.client.program.PackagedProgram;
 import org.apache.flink.client.program.PackagedProgramUtils;
 import org.apache.flink.configuration.*;
 import org.apache.flink.runtime.jobgraph.JobGraph;
+import org.apache.flink.runtime.jobgraph.SavepointConfigOptions;
+import org.apache.flink.runtime.jobgraph.SavepointRestoreSettings;
 import org.apache.flink.yarn.YarnClientYarnClusterInformationRetriever;
 import org.apache.flink.yarn.YarnClusterDescriptor;
 import org.apache.flink.yarn.configuration.YarnConfigOptions;
@@ -22,6 +24,7 @@ import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 
 public class FlinkYarnClusterClientTest {
@@ -57,6 +60,9 @@ public class FlinkYarnClusterClientTest {
         list.add("/home/hadoop/flink-1.10.0/conf/log4j.properties");
 
         flinkConfiguration.set(YarnConfigOptions.SHIP_DIRECTORIES, list);
+
+        flinkConfiguration.set(SavepointConfigOptions.SAVEPOINT_PATH, "hdfs:///flink-1.10.0-savepoints");
+        flinkConfiguration.set(SavepointConfigOptions.SAVEPOINT_IGNORE_UNCLAIMED_STATE, true);
 
         flinkConfiguration.set(YarnConfigOptions.FLINK_DIST_JAR, flinkDistJar);
 
@@ -99,27 +105,31 @@ public class FlinkYarnClusterClientTest {
                 .setUserClassPaths(urls)
                 .build();
 
+
         JobGraph jobGraph = PackagedProgramUtils.createJobGraph(program, flinkConfiguration, PARALLELISM, false);
 
         ClusterClientProvider<ApplicationId> applicationIdClusterClientProvider = yarnClusterDescriptor.deployJobCluster(clusterSpecification, jobGraph, true);
 
-        
         ClusterClient<ApplicationId> clusterClient = applicationIdClusterClientProvider.getClusterClient();
 
         JobID flinkJobID = jobGraph.getJobID();
 
         String yarnClusterId = clusterClient.getClusterId().toString();
 
+        System.out.println("savepoint path:" +  flinkConfiguration.getString(SavepointConfigOptions.SAVEPOINT_PATH));
+
 
         long ts = System.currentTimeMillis();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
 
         while (System.currentTimeMillis() - ts < 5 * 60 * 1000) {
-            Thread.sleep(5000);
+            Thread.sleep(20000);
             System.out.println("当前时间--------------->：" + simpleDateFormat.format(new Date()));
-            System.out.println("当前flink job: " +  flinkJobID.toString() + " 状态：" + clusterClient.getJobStatus(flinkJobID).thenAccept(value -> System.out.println(value)));
+            System.out.println("当前flink job: " + flinkJobID.toString() + " 状态：" + clusterClient.getJobStatus(flinkJobID).thenAccept(value -> System.out.println(value)));
             String applicationStatus = yarnClient.getApplicationReport(clusterClient.getClusterId()).getYarnApplicationState().name();
             System.out.println("当前yarn application job: " + yarnClusterId + " 状态：" + applicationStatus);
+            CompletableFuture<String> triggerSavepoint = clusterClient.triggerSavepoint(flinkJobID, flinkConfiguration.getString(SavepointConfigOptions.SAVEPOINT_PATH));  //触发savepoint方法
+            triggerSavepoint.thenAccept(value -> System.out.println("触发savepoint成功，返回路径---------->" + value));
         }
         System.out.println("FlinkStandaloneClientTest-------------->end");
     }
