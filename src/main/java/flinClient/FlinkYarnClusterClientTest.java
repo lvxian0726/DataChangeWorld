@@ -110,11 +110,19 @@ public class FlinkYarnClusterClientTest {
 
         ClusterClientProvider<ApplicationId> applicationIdClusterClientProvider = yarnClusterDescriptor.deployJobCluster(clusterSpecification, jobGraph, true);
 
+
         ClusterClient<ApplicationId> clusterClient = applicationIdClusterClientProvider.getClusterClient();
 
         JobID flinkJobID = jobGraph.getJobID();
 
         String yarnClusterId = clusterClient.getClusterId().toString();
+
+        /**
+         *  2020-12-13 23:47
+         * 此方法重要，可以从当前flink on yarn任务中 ，凭借applicationid取回cluster flink client对象句柄，已进行后续的client层级的API逻辑处理
+         */
+//        ClusterClientProvider<ApplicationId> clusterClientProvider = yarnClusterDescriptor.retrieve(clusterClient.getClusterId());
+
 
         System.out.println("savepoint path:" +  flinkConfiguration.getString(SavepointConfigOptions.SAVEPOINT_PATH));
 
