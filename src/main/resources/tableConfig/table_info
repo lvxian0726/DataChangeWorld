@@ -1,0 +1,171 @@
+public enum YarnApplicationState {
+  /** Application which was just created. */
+  NEW,
+  /** Application which is being saved. */
+  NEW_SAVING,
+  /** Application which has been submitted. */
+  SUBMITTED,
+  /** Application has been accepted by the scheduler */
+  ACCEPTED,
+  /** Application which is currently running. */
+  RUNNING,
+  /** Application which finished successfully. */
+  FINISHED,
+  /** Application which failed. */
+  FAILED,
+  /** Application which was terminated by a user or admin. */
+  KILLED
+}
+
+
+table_name:task_overview(任务总体概览信息)
+filed: jobName: 信息流新版本-点击曝光序列,
+jobType： JAR,
+jobLevel：2,
+description: "执行任务",
+creater: 72060610,
+ownerList: 72060610, 11070471,
+alertReceiver: 72060610, 11070471,
+jobId: 216071365241
+jobStatus: RUNNING, //任务状态：草稿；等待提交；提交中；启动中；运行中；取消中；已取消；失败中；失败；完成；【已取消；失败；完成是最终状态】
+runtimeDuration: 429049984,
+isPublished: true,
+createTime":"2020-12-05 09: 53: 53,
+lastUpdateTime: 2020-12-09 11: 38: 15
+version: 1  //task 详细配置数据版本
+task_Id: 116071396703
+
+
+table_name: task_config_draft(任务详细配置草稿表)
+数据样例："draft": {
+"jobManagerVcores": 1,
+"taskManagerSlots": 1,
+"parallelism": 0,
+"flinkVersion": "",
+"clusterAddress": "",
+"codeId": 116071396703, //该版本的id
+"clusterName": "",
+"jobFileInfo": "{\"libJar\":[],\"mainJar\":{\"name\":\"\",\"url\":\"\",\"md5\":\"\"}}", //依赖jar和main jar
+"queueTag": "", // yarn 队列名称
+"jobManagerMemory": 1024,
+"jobgraphJson": "",
+"isBeginSavepoint": false, //是否从savepoint path启动
+"taskManagerVcores": -1,
+"isValid": 1,
+"taskManagerNumber": 1,
+"taskManagerMemory": 1024,
+"sqlContent": "",
+"version": 0,
+"deployId": 116071396703,
+"jobId": 116071396702,
+"queueName": "",
+"createTime": "2020-12-05 12:13:47",
+"paramConfig": "{\"jvmArgs\":{name: "lvixan"},\"startArgs\":\"\",\"checkpointInterval\":60,\"minPauseBetweenCheckpoints\":60,\"entryClass\":\"\",\"checkpointTimeout\":60}",
+"savepointPath": "hdfs://bj04-taohua/flink/flink-checkpoints/savepoint-eb6092-591b940b484b", //最新的savepoint path
+"creater": "72060610",
+"lastUpdateTime": "2020-12-05 12:13:47"   //最后一次更新时间，应该是按频次更新job status时记录下来的时间戳
+},
+filed:  {
+"id": 116071396703, //主键id
+"jobId": 116071396702, // jobId
+"flinkVersion": "",
+"clusterAddress": "",
+"clusterName": "",
+"queueName": "", // yarn 队列名称
+"jobManagerVcores": 1,
+"jobManagerMemory": 1024,
+"taskManagerNumber": 1,
+"taskManagerMemory": 1024,
+"taskManagerSlots": 1,
+"parallelism": 0,
+"version": 0, //草稿配置固定为0
+"isBeginSavepoint": false,
+"jobFileInfo.libJarID": "1,2,3,4,5",
+"jobFileInfo.mainJarID": 6,
+"paramConfig.jvmArgs": {}  //kv结构的参数
+"paramConfig.checkpointInterval": 60,
+"paramConfig.minPauseBetweenCheckpoints": 60,
+"paramConfig.checkpointTimeout": 60,
+"paramConfig.entryClass": "main class",
+"createTime": "2020-12-05 12:13:47",
+"savepointPath": "hdfs://...", //当前任务最新的savepoint path
+"creater": "72060610",
+}
+
+
+table_name:task_config_prduct(任务线上详细配置[包含历史轨迹信息]表)
+
+filed: {
+"id": 116071396703, //主键id
+"jobId": 116071396702, // jobId
+"flinkVersion": "",
+"clusterAddress": "",
+"clusterName": "",
+"queueName": "", // yarn 队列名称
+"jobManagerVcores": 1,
+"jobManagerMemory": 1024,
+"taskManagerNumber": 1,
+"taskManagerMemory": 1024,
+"taskManagerSlots": 1,
+"parallelism": 0,
+"version": 0, //草稿配置固定为0
+"isBeginSavepoint": false,
+"jobFileInfo.libJarID": "1,2,3,4,5",
+"jobFileInfo.mainJarID": 6,
+"paramConfig.jvmArgs":{
+}  //kv结构的参数
+"paramConfig.checkpointInterval": 60,
+"paramConfig.minPauseBetweenCheckpoints": 60,
+"paramConfig.checkpointTimeout": 60,
+"paramConfig.entryClass": "main class",
+"createTime": "2020-12-05 12:13:47",
+"savepointPath": "hdfs://...", //当前任务最新的savepoint path
+"creater": "72060610",
+"version": 1
+}
+
+
+table_name: task_savepoint_detail(任务触发savepint的存储数据表)
+field: {
+"createTime": "2020-12-16 15:05:32",
+"creatorId": "72060610",
+"id":97,
+"jobId": 216075957471,
+"note": "72060610于2020-12-16 15:05:31手动触发",
+"savepointPath": "hdfs://bj04-taohua/flink/flink-checkpoints/savepoint-eb6092-591b940b484b",
+"title": "[用户手动触发]2020-12-16 15:05:31"
+},
+table_name: dependency_depository_overview(任务依赖jar的仓库总览表)
+field: description: udf管理仓库,
+ownerList:72060610, 11070471,
+referableList: 72060610, 11070471,
+repositoryId: 116003124708,
+repositoryName: feednews_jars,
+updateTime:2020-11-12 11: 02: 06
+createTime: 2020-11-12 11: 02: 06
+
+
+table_name: dependency_depository_detail(任务依赖jar的仓库明细表)
+
+field: creator: 72060610,
+description: XXXXXX,
+jarName: jedis-2.9.0.jar,
+md5: 6a6aca8811e3d0c74525ca670a310f3f,
+repositoryId: 116003124708,
+storePath: hdfs: //bj03-hehua/vstream/116003124708-1/jedis-2.9.0.jar,
+updateTime: 2020-09-17 14: 16:33,
+createTime: 2020-09-17 14: 16: 33,
+jarId: 100
+
+
+
+table_name: user_info(用户表)
+field: {
+id: 1,
+employee: "72060610",
+user_name:"吕仙",
+department_name: "人工智能一部",
+department_number: "321",
+create_time: "2020-12-16 12:00:00",
+update_time: "2020-12-16 12:00:00",
+}
